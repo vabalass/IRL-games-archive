@@ -78,10 +78,12 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
+    "taggit",
 ]
 
 LOCAL_APPS = [
     "games_project.users",
+    "games_project.games",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

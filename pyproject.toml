@@ -171,6 +171,7 @@ dependencies = [
     "django-environ==0.12.0",
     "django-model-utils==5.0.0",
     "django-redis==6.0.0",
+    "django-taggit>=6.1.0",
     "gunicorn==25.0.0",
     "hiredis==3.3.0",
     "pillow==12.1.0",
