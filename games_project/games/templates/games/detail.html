@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+
+
+  {{ user.username }}
+
+
+{% endblock title %}
+{% block content %}
+<h1>{{ game.title }}</h1>
+<p>{{ game.description }}</p>
+<a href="{% url 'games:list' %}">Back to all games</a>
+{% endblock content %}

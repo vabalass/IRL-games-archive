@@ -14,6 +14,8 @@ class Game(models.Model):
     max_players = models.PositiveSmallIntegerField(default=10)
     min_duration = models.PositiveSmallIntegerField(default=1) # minutes
     max_duration = models.PositiveSmallIntegerField(default=30)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     environment = models.CharField(
         max_length = 4, 

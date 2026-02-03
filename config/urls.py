@@ -19,6 +19,7 @@ urlpatterns = [
     path("users/", include("games_project.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
+    path("games/", include("games_project.games.urls", namespace="games")),
     # ...
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
