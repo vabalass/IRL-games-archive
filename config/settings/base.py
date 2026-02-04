@@ -82,9 +82,10 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    # Your stuff: custom apps go here
     "games_project.users",
     "games_project.games",
-    # Your stuff: custom apps go here
+    "games_project.feedback",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

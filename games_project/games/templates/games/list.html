@@ -14,7 +14,7 @@
 <ul>
     {% for game in games %}
         <li>
-            <a href="{% url 'games:detail' game.pk %}">{{ game.title }}</a>
+            <a href="{% url 'games:detail' game.slug %}">{{ game.title }}</a>
         </li>
     {% empty %}
         <li>No games available yet.</li>

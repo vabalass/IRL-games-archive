@@ -7,8 +7,24 @@ class Environment(models.TextChoices):
     INDOOR = "IN", "Indoor"
     BOTH = "BOTH", "Indoor or Outdoor"
 
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, db_index=True)
+    description = models.TextField(blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
 class Game(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, db_index=True)
     description = models.TextField(help_text="Use markdown", blank=True)
     min_players = models.PositiveSmallIntegerField(default=1)
     max_players = models.PositiveSmallIntegerField(default=10)
@@ -16,6 +32,7 @@ class Game(models.Model):
     max_duration = models.PositiveSmallIntegerField(default=30)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    category = models.ForeignKey(Category, null=True, on_delete=models.RESTRICT) # Prevents deleting a Category if any Game references it
 
     environment = models.CharField(
         max_length = 4, 
@@ -34,6 +51,7 @@ class Game(models.Model):
     equipment = TaggableManager(help_text="list of equipment (ball, string, paper...)", blank=True)
 
     def clean(self):
+        super().clean()
         if self.min_players > self.max_players:
             raise ValidationError("Minimum players number cannot be bigger than maximum players.")
         if self.min_duration > self.max_duration:
@@ -44,11 +62,11 @@ class Game(models.Model):
         self.full_clean()
 
         # Call real save method
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Game"
-        verbose_name_plural = "Gamesss"
+        verbose_name_plural = "Games"
         ordering = ["title"] 
 
     def __str__(self):
