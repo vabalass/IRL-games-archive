@@ -1,12 +1,22 @@
 from django.contrib import admin
-from .models import Game, Category
+from django.utils import timezone
+from .models import Game, Category, RecommendedGame
 from feedback.models import Comment
+from .selectors import recommended_games_anotated_with_avg_rating
 
 class CommentsInLine(admin.TabularInline):
     model = Comment
     extra = 0
     fields = ["author", "text", "rating", "created"]
     readonly_fields = ["created"]
+    ordering = ["created"]
+    show_change_link = True
+
+class GamesInLine(admin.StackedInline):
+    model = Game
+    extra = 0
+    fields = ["title", "min_players", "max_players"]
+    readonly_fields = ["title", "min_players", "max_players"]
     ordering = ["created"]
     show_change_link = True
 
@@ -44,4 +54,20 @@ class CategoryAdmin(admin.ModelAdmin):
     ]
 
     prepopulated_fields = {"slug": ("title",)}
+    inlines = [GamesInLine]
+
+@admin.register(RecommendedGame)
+class GameRecommendedAdmin(admin.ModelAdmin):
+    list_display = ["environment", "created"]
+
+    def get_queryset(self, request):
+        return recommended_games_anotated_with_avg_rating()
+    
+    def display_avg_rating(self, obj):
+        # obj = one RecommendedGame instance. Same as: game = RecommendedGame.objects.get(id=1)
+        return obj.avg_rating
+    display_avg_rating.short_description = "Avg rating calculated using selectors"
+
+    
+
 

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.core.exceptions import ValidationError
 from taggit.managers import TaggableManager
 
@@ -32,7 +33,7 @@ class Game(models.Model):
     max_duration = models.PositiveSmallIntegerField(default=30)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(Category, null=True, on_delete=models.RESTRICT) # Prevents deleting a Category if any Game references it
+    category = models.ForeignKey(Category, null=True, on_delete=models.RESTRICT) # prevents deleting a Category if any Game references it
 
     environment = models.CharField(
         max_length = 4, 
@@ -74,3 +75,17 @@ class Game(models.Model):
     
     def equipment_list(self):
         return ", ".join(item.name for item in self.equipment.all())
+
+class RecommendedGame(Game):
+    class Meta:
+        proxy = True # don't create new DB table
+        verbose_name = "Recommended Game"
+        verbose_name_plural = "Recommended Games"
+
+    # bad because it sends query for every single Game 
+    def average_rating(self):
+        return (
+            self.comments
+            .filter(rating__isnull=False)
+            .aggregate(avg=Avg("rating"))["avg"]
+        ) or "No rating"

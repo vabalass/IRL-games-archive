@@ -29,7 +29,7 @@ class Comment(models.Model):
 
     def clean(self):
         super().clean()
-        if self.parent.game_id != self.game_id:
+        if self.parent_id and self.parent.game_id != self.game_id:
             raise ValidationError("Reply must be under the same Game as Parent.")
         
     def save(self, *args, **kwargs):
