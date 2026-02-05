@@ -42,6 +42,14 @@ class GameAdmin(admin.ModelAdmin):
     list_display_links = ("title",)
     list_editable = ["environment"]
 
+    list_filter = [
+        "environment",
+        "created",
+        "max_duration",
+        "equipment",
+        "category"
+    ]
+
     inlines = [CommentsInLine]
 
 @admin.register(Category)
