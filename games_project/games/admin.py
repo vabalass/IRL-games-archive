@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Game, Category, GameWithStats
+from django.contrib.admin import BooleanFieldListFilter, DateFieldListFilter, AllValuesFieldListFilter
 from feedback.models import Comment
+from .models import Game, Category, GameWithStats
 from .selectors import games_anotated_with_stats
 
 class CommentsInLine(admin.TabularInline):
@@ -75,8 +76,9 @@ class GameAdmin(admin.ModelAdmin):
 
     list_filter = [
         GroupSizeListFilter,
+        ("is_active", BooleanFieldListFilter),
         "environment",
-        "created",
+        ("created", DateFieldListFilter),
         "max_duration",
         "equipment",
         "category",

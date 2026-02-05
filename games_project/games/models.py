@@ -34,6 +34,7 @@ class Game(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     category = models.ForeignKey(Category, null=True, on_delete=models.RESTRICT) # prevents deleting a Category if any Game references it
+    is_active = models.BooleanField(default=True, help_text="Game can be deactivated without deleting it.")
 
     environment = models.CharField(
         max_length = 4, 
