@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.utils import timezone
-from .models import Game, Category, RecommendedGame
+from .models import Game, Category, GameWithStats
 from feedback.models import Comment
-from .selectors import recommended_games_anotated_with_avg_rating
+from .selectors import games_anotated_with_stats
 
 class CommentsInLine(admin.TabularInline):
     model = Comment
     extra = 0
-    fields = ["author", "text", "rating", "created"]
+    fields = ["author", "parent", "text", "rating", "created"]
     readonly_fields = ["created"]
     ordering = ["created"]
     show_change_link = True
@@ -56,17 +56,24 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     inlines = [GamesInLine]
 
-@admin.register(RecommendedGame)
+@admin.register(GameWithStats)
 class GameRecommendedAdmin(admin.ModelAdmin):
-    list_display = ["environment", "created"]
+    list_display = ["title", "average_rating", "display_avg_rating", "display_comment_count", "environment", "created"]
 
     def get_queryset(self, request):
-        return recommended_games_anotated_with_avg_rating()
+        return games_anotated_with_stats()
     
     def display_avg_rating(self, obj):
         # obj = one RecommendedGame instance. Same as: game = RecommendedGame.objects.get(id=1)
-        return obj.avg_rating
+        return f"{obj.avg_rating:.2f}"
+
     display_avg_rating.short_description = "Avg rating calculated using selectors"
+    display_avg_rating.admin_order_field = "avg_rating"
+
+    def display_comment_count(self, obj):
+        return obj.comments_count
+    
+    display_comment_count.short_description = "Number of comments"
 
     
 

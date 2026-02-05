@@ -76,16 +76,18 @@ class Game(models.Model):
     def equipment_list(self):
         return ", ".join(item.name for item in self.equipment.all())
 
-class RecommendedGame(Game):
+class GameWithStats(Game):
     class Meta:
         proxy = True # don't create new DB table
-        verbose_name = "Recommended Game"
-        verbose_name_plural = "Recommended Games"
+        verbose_name = "Game with stats"
+        verbose_name_plural = "Games with stats"
 
     # bad because it sends query for every single Game 
     def average_rating(self):
-        return (
+        rating = (
             self.comments
             .filter(rating__isnull=False)
             .aggregate(avg=Avg("rating"))["avg"]
-        ) or "No rating"
+        )
+
+        return f"{rating:.2f}" or "no rating"
