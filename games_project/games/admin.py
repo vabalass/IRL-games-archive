@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.utils import timezone
 from .models import Game, Category, GameWithStats
 from feedback.models import Comment
 from .selectors import games_anotated_with_stats
@@ -19,6 +18,38 @@ class GamesInLine(admin.StackedInline):
     readonly_fields = ["title", "min_players", "max_players"]
     ordering = ["created"]
     show_change_link = True
+
+class GroupSizeListFilter(admin.SimpleListFilter):
+    title = "Players group size"
+    parameter_name = "group_size"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("<10", "Under 10"),
+            ("10-20", "Between 10 and 20"),
+            ("21-50", "Between 21 and 50"),
+            ("50+", "Between 50+"),
+        ]
+    
+    def queryset(self, request, queryset):
+        if self.value() == "<10":
+            return queryset.filter(
+                max_players__lt=10,
+            )
+        if self.value() == "10-20":
+            return queryset.filter(
+                max_players__lt=21,
+            )
+        if self.value() == "21-50":
+            return queryset.filter(
+                max_players__lt=51,
+            )
+        if self.value() == "50+":
+            return queryset.filter(
+                max_players__gt=50,
+            )
+        
+
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
@@ -43,11 +74,13 @@ class GameAdmin(admin.ModelAdmin):
     list_editable = ["environment"]
 
     list_filter = [
+        GroupSizeListFilter,
         "environment",
         "created",
         "max_duration",
         "equipment",
-        "category"
+        "category",
+        "comments__author"
     ]
 
     inlines = [CommentsInLine]
