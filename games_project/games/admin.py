@@ -1,14 +1,23 @@
 from django.contrib import admin
+from django.contrib import messages
 from django.contrib.admin import BooleanFieldListFilter, DateFieldListFilter, AllValuesFieldListFilter
+from django.utils.translation import ngettext
 from feedback.models import Comment
-from .models import Game, Category, GameWithStats
+from .models import Game, Category, GameWithStats, Environment
 from .selectors import games_anotated_with_stats
 
 class CommentsInLine(admin.TabularInline):
     model = Comment
     extra = 0
+    # fieldsets = [
+    #     ('None', {
+    #         'classes': ['collapse'],
+    #         'fields': ["author", "parent", "text", "rating", "created"],
+    #     }),
+    # ]
     fields = ["author", "parent", "text", "rating", "created"]
     readonly_fields = ["created"]
+    classes = ['collapse']
     ordering = ["created"]
     show_change_link = True
 
@@ -49,9 +58,22 @@ class GroupSizeListFilter(admin.SimpleListFilter):
             return queryset.filter(
                 max_players__gt=50,
             )
+
+@admin.action(description="Set selected games environment to indoor.")
+def make_indoor(self, request, queryset):
+    updated = queryset.update(environment=Environment.INDOOR)
+    self.message_user(
+        request,
+        ngettext(
+            f"%d game was successfuly set as {Environment.INDOOR.label}.",
+            f"%d games were successfuly set as {Environment.INDOOR.label}.",
+            updated,
+        )
+        % updated,
+        messages.SUCCESS,
+    )
+admin.site.add_action(make_indoor)
         
-
-
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     list_display = (
@@ -85,7 +107,26 @@ class GameAdmin(admin.ModelAdmin):
         "comments__author"
     ]
 
+    search_fields = ["title", "description"]
+
     inlines = [CommentsInLine]
+
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["title", "slug", "category", "environment", "description",
+                            "min_players", "max_players", "min_duration", "max_duration", ],
+            },
+        ),
+        (
+            "Advanced options",
+            {
+                "classes": ["collapse"],
+                "fields": ["attachments", "is_active"],
+            },
+        ),
+    ]
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -100,7 +141,7 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [GamesInLine]
 
 @admin.register(GameWithStats)
-class GameRecommendedAdmin(admin.ModelAdmin):
+class GameStatsAdmin(admin.ModelAdmin):
     list_display = ["title", "average_rating", "display_avg_rating", "display_comment_count", "environment", "created"]
 
     def get_queryset(self, request):
