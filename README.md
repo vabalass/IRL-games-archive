@@ -18,11 +18,21 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
     cd IRL-games-archive
 
 ### Build and start project
-    # Build containers
-    just build
+- with just
 
-    # Start containers
-    just up
+        # Build containers
+        just build
+
+        # Start containers
+        just up
+
+- without just
+
+        # Build containers
+        docker compose -f docker-compose.local.yml build
+
+        # Start containers
+        docker compose -f docker-compose.local.yml up -d
 
 ### Setting Up Your Users
 
