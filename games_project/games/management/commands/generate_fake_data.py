@@ -12,17 +12,17 @@ from games_project.users.models import User
 
 fake = Faker()
 GAME_CATEGORIES = [
-    "Gaudynės",
-    "Slėpynės",
-    "Žongliravimas",
-    "Medžioklė",
-    "Žvėjyba",
-    "Žygis",
-    "Kvadratas",
-    "Pasivaikščiojimas",
-    "Susipažinimas",
-    "Tvarkymasis",
-    "Dienos aptarimas",
+    "Tag",
+    "Hide and Seek",
+    "Juggling",
+    "Hunt",
+    "Fishing",
+    "Hike",
+    "knock",
+    "Walk",
+    "Icebreaker",
+    "Cleanup",
+    "Daily Review",
 ]
 
 
@@ -47,19 +47,20 @@ class Command(BaseCommand):
         model = options["model"]
         count = options["count"]
 
-        if model == "all":
-            self._create_all(count)
-        elif model == "games":
-            self._create_games(count)
-        elif model == "categories":
-            self._create_categories(count)
-        elif model == "comments":
-            self._create_comments(count)
-        elif model == "users":
-            self._create_users(count)
+        match model:
+            case "all":
+                self._create_all(count)
+            case "games":
+                self._create_games(count)
+            case "categories":
+                self._create_categories(count)
+            case "comments":
+                self._create_comments(count)
+            case "users":
+                self._create_users(count)
 
     def _create_all(self, count):
-        self._create_users(5)
+        self._create_users(count)
         self._create_categories(len(GAME_CATEGORIES))
         self._create_games(count)
         self._create_comments(count)
@@ -147,8 +148,8 @@ class Command(BaseCommand):
     def _create_users(self, count):
         created_count = 0
 
-        for i in range(count):
-            username = f"{fake.user_name()}_{i}"
+        while created_count <= count:
+            username = f"{fake.user_name()}_{created_count}"
             _, created = User.objects.get_or_create(
                 username=username,
             )

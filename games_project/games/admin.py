@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin import BooleanFieldListFilter
 from django.contrib.admin import DateFieldListFilter
-from django.utils.translation import ngettext
 
 from games_project.feedback.models import Comment
 
@@ -68,14 +67,7 @@ class GroupSizeListFilter(admin.SimpleListFilter):
 @admin.action(description="Set selected games environment to indoor.")
 def make_indoor(self, request, queryset):
     updated = queryset.update(environment=Environment.INDOOR)
-    message = ngettext(
-        "%(count)d game was successfully set as %(env)s",
-        "%(count)d games were successfully set as %(env)s",
-        updated,
-    ) % {
-        "count": updated,
-        "env": Environment.INDOOR.label,
-    }
+    message = f"{updated} game(s) was successfully set as {self.environment_label}"
 
     self.message_user(request, message, messages.SUCCESS)
 
