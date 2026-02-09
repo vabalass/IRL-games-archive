@@ -13,6 +13,27 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
 
 ## Basic Commands
 
+### Installation
+    git clone https://github.com/vabalass/IRL-games-archive.git
+    cd IRL-games-archive
+
+### Build and start project
+- with just
+
+        # Build containers
+        just build
+
+        # Start containers
+        just up
+
+- without just
+
+        # Build containers
+        docker compose -f docker-compose.local.yml build
+
+        # Start containers
+        docker compose -f docker-compose.local.yml up -d
+
 ### Setting Up Your Users
 
 - To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
