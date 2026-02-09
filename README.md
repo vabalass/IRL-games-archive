@@ -18,7 +18,7 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
     cd IRL-games-archive
 
 ### Build and start project
-- with just
+- with **just**:
 
         # Build containers
         just build
@@ -26,13 +26,19 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
         # Start containers
         just up
 
-- without just
+        # Stop containers
+        just down
+
+- without **just**:
 
         # Build containers
         docker compose -f docker-compose.local.yml build
 
         # Start containers
         docker compose -f docker-compose.local.yml up -d
+
+        # Start containers
+        docker compose -f docker-compose.local.yml down
 
 ### Setting Up Your Users
 
