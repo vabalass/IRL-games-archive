@@ -65,7 +65,7 @@ class GroupSizeListFilter(admin.SimpleListFilter):
                 return queryset
 
 
-@admin.action(description="Set selected games environment to indoor.")
+@admin.action(description="Set selected games environment to indoor")
 def make_indoor(self, request, queryset):
     updated = queryset.update(environment=Environment.INDOOR)
     message = f"{updated} game(s) was successfully set as {self.environment_label}"
@@ -73,7 +73,15 @@ def make_indoor(self, request, queryset):
     self.message_user(request, message, messages.SUCCESS)
 
 
+@admin.action(description="Soft delete selected games")
+def soft_delete(self, request, queryset):
+    updated = queryset.update(is_active=False)
+    message = f"{updated} games(s) was successfully soft deleted"
+    self.message_user(request, message, messages.SUCCESS)
+
+
 admin.site.add_action(make_indoor)
+admin.site.add_action(soft_delete)
 
 
 @admin.register(Game)
@@ -158,6 +166,10 @@ class CategoryAdmin(admin.ModelAdmin):
 class GameStatsAdmin(admin.ModelAdmin):
     list_display = [
         "title",
+        "last_comment",
+        "comments_count_last_day",
+        "display_updated_last_day",
+        "is_active",
         "average_rating",
         "display_avg_rating",
         "display_comment_count",
@@ -171,12 +183,12 @@ class GameStatsAdmin(admin.ModelAdmin):
     @admin.display(ordering="avg_rating")
     @title("Avg rating calculated using selectors")
     def display_avg_rating(self, obj):
-        # obj = one RecommendedGame instance.
-        # Same as: game = RecommendedGame.objects.get(id=1)
         return f"{obj.avg_rating:.2f}"
 
-    @admin.display(
-        description="Number of comments",
-    )
+    @admin.display(description="Number of comments")
     def display_comment_count(self, obj):
         return obj.comments_count
+
+    @admin.display(description="Updated last day", boolean=True)
+    def display_updated_last_day(self, obj):
+        return obj.was_updated_last_day
