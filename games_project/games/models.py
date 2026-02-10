@@ -109,12 +109,12 @@ class GameWithStats(Game):
         comment = self.comments.order_by("-created").first()
         return comment.text if comment else None
 
-    @property
-    def last_24h_comments_count(self):
-        yesterday = timezone.now() - timezone.timedelta(hours=24)
-        return self.comments.filter(created__gte=yesterday).count()
+    yesterday = timezone.now() - timezone.timedelta(day=1)
 
     @property
-    def has_been_updated_in_last_24_hours(self):
-        yesterday = timezone.now() - timezone.timedelta(hours=24)
-        return self.modified >= yesterday
+    def comments_count_last_day(self):
+        return self.comments.filter(created__gte=self.yesterday).count()
+
+    @property
+    def was_updated_last_day(self):
+        return self.modified >= self.yesterday
