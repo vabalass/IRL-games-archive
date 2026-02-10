@@ -64,7 +64,7 @@ class GroupSizeListFilter(admin.SimpleListFilter):
         return None
 
 
-@admin.action(description="Set selected games environment to indoor.")
+@admin.action(description="Set selected games environment to indoor")
 def make_indoor(self, request, queryset):
     updated = queryset.update(environment=Environment.INDOOR)
     message = f"{updated} game(s) was successfully set as {self.environment_label}"
@@ -72,7 +72,15 @@ def make_indoor(self, request, queryset):
     self.message_user(request, message, messages.SUCCESS)
 
 
+@admin.action(description="Soft delete selected games")
+def soft_delete(self, request, queryset):
+    updated = queryset.update(is_active=False)
+    message = f"{updated} games(s) was successfully soft deleted"
+    self.message_user(request, message, messages.SUCCESS)
+
+
 admin.site.add_action(make_indoor)
+admin.site.add_action(soft_delete)
 
 
 @admin.register(Game)
@@ -175,7 +183,6 @@ class GameStatsAdmin(admin.ModelAdmin):
         ordering="avg_rating",
     )
     def display_avg_rating(self, obj):
-        # obj = one RecommendedGame instance.
         return f"{obj.avg_rating:.2f}"
 
     @admin.display(description="Number of comments")
