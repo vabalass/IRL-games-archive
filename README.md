@@ -50,6 +50,21 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
+### Generate Sample Data
+
+Populate the database with test data:
+
+- Generate everything (5 users, all categories, 5 games, 5 comments)
+
+        just manage generate_fake_data all
+
+- Or specific types with custom count
+
+        just manage generate_fake_data users --count 10
+        just manage generate_fake_data categories
+        just manage generate_fake_data games --count 50
+        just manage generate_fake_data comments --count 100
+
 ### Type checks
 
 Running type checks with mypy:
