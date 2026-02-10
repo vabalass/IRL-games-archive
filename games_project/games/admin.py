@@ -5,6 +5,7 @@ from django.contrib.admin import DateFieldListFilter
 
 from games_project.feedback.models import Comment
 
+from .decorators import title
 from .models import Category
 from .models import Environment
 from .models import Game
@@ -31,8 +32,8 @@ class GamesInLine(admin.StackedInline):
     show_change_link = True
 
 
+@title("Players group size")
 class GroupSizeListFilter(admin.SimpleListFilter):
-    title = "Players group size"
     parameter_name = "group_size"
 
     def lookups(self, request, model_admin):
@@ -166,10 +167,8 @@ class GameStatsAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return games_anotated_with_stats()
 
-    @admin.display(
-        description="Avg rating calculated using selectors",
-        ordering="avg_rating",
-    )
+    @admin.display(ordering="avg_rating")
+    @title("Avg rating calculated using selectors")
     def display_avg_rating(self, obj):
         # obj = one RecommendedGame instance.
         # Same as: game = RecommendedGame.objects.get(id=1)
