@@ -158,6 +158,10 @@ class CategoryAdmin(admin.ModelAdmin):
 class GameStatsAdmin(admin.ModelAdmin):
     list_display = [
         "title",
+        "last_comment",
+        "last_24h_comments_count",
+        "display_updated_in_last_24_hours",
+        "is_active",
         "average_rating",
         "display_avg_rating",
         "display_comment_count",
@@ -172,11 +176,12 @@ class GameStatsAdmin(admin.ModelAdmin):
     @title("Avg rating calculated using selectors")
     def display_avg_rating(self, obj):
         # obj = one RecommendedGame instance.
-        # Same as: game = RecommendedGame.objects.get(id=1)
         return f"{obj.avg_rating:.2f}"
 
-    @admin.display(
-        description="Number of comments",
-    )
+    @admin.display(description="Number of comments")
     def display_comment_count(self, obj):
         return obj.comments_count
+
+    @admin.display(description="Updated in last 24h", boolean=True)
+    def display_updated_in_last_24_hours(self, obj):
+        return obj.has_been_updated_in_last_24_hours
