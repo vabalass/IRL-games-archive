@@ -167,8 +167,8 @@ class GameStatsAdmin(admin.ModelAdmin):
     list_display = [
         "title",
         "last_comment",
-        "last_24h_comments_count",
-        "display_updated_in_last_24_hours",
+        "comments_count_last_day",
+        "display_updated_last_day",
         "is_active",
         "average_rating",
         "display_avg_rating",
@@ -189,6 +189,6 @@ class GameStatsAdmin(admin.ModelAdmin):
     def display_comment_count(self, obj):
         return obj.comments_count
 
-    @admin.display(description="Updated in last 24h", boolean=True)
-    def display_updated_in_last_24_hours(self, obj):
-        return obj.has_been_updated_in_last_24_hours
+    @admin.display(description="Updated last day", boolean=True)
+    def display_updated_last_day(self, obj):
+        return obj.was_updated_last_day
