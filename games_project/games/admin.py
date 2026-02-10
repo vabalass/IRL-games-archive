@@ -5,6 +5,7 @@ from django.contrib.admin import DateFieldListFilter
 
 from games_project.feedback.models import Comment
 
+from .decorators import remove_delete_actions
 from .decorators import title
 from .models import Category
 from .models import Environment
@@ -70,6 +71,22 @@ def make_indoor(self, request, queryset):
     updated = queryset.update(environment=Environment.INDOOR)
     message = f"{updated} game(s) were successfully set as {Environment.INDOOR.label}"
 
+    self.message_user(request, message, messages.SUCCESS)
+
+
+@admin.action(description="Soft delete selected games")
+def soft_delete(self, request, queryset):
+    updated = queryset.update(is_active=False)
+    message = f"{updated} game(s) were successfully soft_deleted"
+
+    self.message_user(request, message, messages.SUCCESS)
+
+
+@admin.action(description="Reset games rating (comments rating will be set to None)")
+def reset_rating(self, request, queryset):
+    updated = Comment.objects.filter(game__in=queryset).update(rating=None)
+
+    message = f"{updated} comment ratings(s) were successfully reset"
     self.message_user(request, message, messages.SUCCESS)
 
 
@@ -171,6 +188,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(GameWithStats)
+@remove_delete_actions
 class GameStatsAdmin(admin.ModelAdmin):
     list_display = [
         "title",
