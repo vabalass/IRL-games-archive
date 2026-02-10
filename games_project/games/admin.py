@@ -126,6 +126,7 @@ class GameAdmin(admin.ModelAdmin):
                     "max_players",
                     "min_duration",
                     "max_duration",
+                    "is_active",
                 ],
             },
         ),
@@ -133,7 +134,7 @@ class GameAdmin(admin.ModelAdmin):
             "Advanced options",
             {
                 "classes": ["collapse"],
-                "fields": ["attachments", "is_active"],
+                "fields": ["attachments"],
             },
         ),
     ]
