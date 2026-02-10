@@ -40,28 +40,28 @@ class GroupSizeListFilter(admin.SimpleListFilter):
             ("<10", "Under 10"),
             ("10-20", "Between 10 and 20"),
             ("21-50", "Between 21 and 50"),
-            ("50+", "Between 50+"),
+            ("50+", "Above 50"),
         ]
 
     def queryset(self, request, queryset):
-        if self.value() == "<10":
-            return queryset.filter(
-                max_players__lt=10,
-            )
-        if self.value() == "10-20":
-            return queryset.filter(
-                max_players__lt=21,
-            )
-        if self.value() == "21-50":
-            return queryset.filter(
-                max_players__lt=51,
-            )
-        if self.value() == "50+":
-            return queryset.filter(
-                max_players__gt=50,
-            )
-
-        return None
+        value = self.value()
+        match value:
+            case "<10":
+                return queryset.filter(min_players__lt=10)
+            case "10-20":
+                return queryset.filter(
+                    max_players__gte=10,
+                    min_players__lte=20,
+                )
+            case "21-50":
+                return queryset.filter(
+                    max_players__gte=21,
+                    min_players__lte=50,
+                )
+            case "50+":
+                return queryset.filter(max_players__gte=50)
+            case _:
+                return queryset
 
 
 @admin.action(description="Set selected games environment to indoor.")
@@ -126,6 +126,7 @@ class GameAdmin(admin.ModelAdmin):
                     "max_players",
                     "min_duration",
                     "max_duration",
+                    "is_active",
                 ],
             },
         ),
@@ -133,7 +134,7 @@ class GameAdmin(admin.ModelAdmin):
             "Advanced options",
             {
                 "classes": ["collapse"],
-                "fields": ["attachments", "is_active"],
+                "fields": ["attachments"],
             },
         ),
     ]
