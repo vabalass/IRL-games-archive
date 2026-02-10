@@ -81,8 +81,17 @@ def soft_delete(self, request, queryset):
     self.message_user(request, message, messages.SUCCESS)
 
 
+@admin.action(description="Reset games rating (comments rating will be set to None)")
+def reset_rating(self, request, queryset):
+    updated = Comment.objects.filter(game__in=queryset).update(rating=None)
+
+    message = f"{updated} comment ratings(s) were successfully reset"
+    self.message_user(request, message, messages.SUCCESS)
+
+
 admin.site.add_action(make_indoor)
 admin.site.add_action(soft_delete)
+admin.site.add_action(reset_rating)
 
 
 @admin.register(Game)
