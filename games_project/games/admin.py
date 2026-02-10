@@ -5,6 +5,7 @@ from django.contrib.admin import DateFieldListFilter
 
 from games_project.feedback.models import Comment
 
+from .decorators import remove_delete_actions
 from .models import Category
 from .models import Environment
 from .models import Game
@@ -64,15 +65,24 @@ class GroupSizeListFilter(admin.SimpleListFilter):
         return None
 
 
-@admin.action(description="Set selected games environment to indoor.")
+@admin.action(description="Set selected games environment to indoor")
 def make_indoor(self, request, queryset):
     updated = queryset.update(environment=Environment.INDOOR)
-    message = f"{updated} game(s) was successfully set as {self.environment_label}"
+    message = f"{updated} game(s) were successfully set as {self.environment_label}"
+
+    self.message_user(request, message, messages.SUCCESS)
+
+
+@admin.action(description="Soft delete selected games")
+def soft_delete(self, request, queryset):
+    updated = queryset.update(is_active=False)
+    message = f"{updated} game(s) were successfully soft_deleted"
 
     self.message_user(request, message, messages.SUCCESS)
 
 
 admin.site.add_action(make_indoor)
+admin.site.add_action(soft_delete)
 
 
 @admin.register(Game)
@@ -126,6 +136,7 @@ class GameAdmin(admin.ModelAdmin):
                     "max_players",
                     "min_duration",
                     "max_duration",
+                    "is_active",
                 ],
             },
         ),
@@ -133,10 +144,19 @@ class GameAdmin(admin.ModelAdmin):
             "Advanced options",
             {
                 "classes": ["collapse"],
-                "fields": ["attachments", "is_active"],
+                "fields": ["attachments"],
             },
         ),
     ]
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if "delete_selected" in actions:
+            del actions["delete_selected"]
+        return actions
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Category)
@@ -153,6 +173,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(GameWithStats)
+@remove_delete_actions
 class GameStatsAdmin(admin.ModelAdmin):
     list_display = [
         "title",
