@@ -109,7 +109,7 @@ class GameWithStats(Game):
         comment = self.comments.order_by("-created").first()
         return comment.text if comment else None
 
-    yesterday = timezone.now() - timezone.timedelta(day=1)
+    yesterday = timezone.now() - timezone.timedelta(days=1)
 
     @property
     def comments_count_last_day(self):
