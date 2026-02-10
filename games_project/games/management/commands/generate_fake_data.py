@@ -76,7 +76,8 @@ class Command(BaseCommand):
             return
 
         for i in range(count):
-            title = random.choice(GAME_CATEGORIES) + " pagal " + fake.first_name()
+            title = random.choice(GAME_CATEGORIES) + " by " + fake.first_name()
+
             slug = f"{slugify(title)}-{i}"
             Game.objects.create(
                 title=title,
