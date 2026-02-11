@@ -68,7 +68,7 @@ class GroupSizeListFilter(admin.SimpleListFilter):
 @admin.action(description="Set selected games environment to indoor")
 def make_indoor(self, request, queryset):
     updated = queryset.update(environment=Environment.INDOOR)
-    message = f"{updated} game(s) was successfully set as {self.environment_label}"
+    message = f"{updated} game(s) were successfully set as {Environment.INDOOR.label}"
 
     self.message_user(request, message, messages.SUCCESS)
 
@@ -80,12 +80,19 @@ def soft_delete(self, request, queryset):
     self.message_user(request, message, messages.SUCCESS)
 
 
-admin.site.add_action(make_indoor)
-admin.site.add_action(soft_delete)
+class NoDeleteMixin:
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if "delete_selected" in actions:
+            del actions["delete_selected"]
+        return actions
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Game)
-class GameAdmin(admin.ModelAdmin):
+class GameAdmin(NoDeleteMixin, admin.ModelAdmin):
     list_display = (
         "title",
         "slug",
@@ -105,6 +112,7 @@ class GameAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     list_display_links = ("title",)
     list_editable = ["environment"]
+    actions = [reset_rating, soft_delete, make_indoor]
 
     list_filter = [
         GroupSizeListFilter,
@@ -176,6 +184,8 @@ class GameStatsAdmin(admin.ModelAdmin):
         "environment",
         "created",
     ]
+
+    actions = [reset_rating, soft_delete]
 
     def get_queryset(self, request):
         return games_anotated_with_stats()
