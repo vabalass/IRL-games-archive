@@ -21,7 +21,10 @@ class UserAdmin(auth_admin.UserAdmin):
     add_form = UserAdminCreationForm
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("name", "email")}),
+        (
+            _("Personal info"),
+            {"fields": ("name", "email", "last_ip_address", "last_ip_update")},
+        ),
         (
             _("Permissions"),
             {
@@ -38,3 +41,4 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     list_display = ["username", "name", "is_superuser"]
     search_fields = ["name"]
+    readonly_fields = ["last_ip_address", "last_ip_update"]
