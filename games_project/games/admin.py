@@ -6,6 +6,7 @@ from django.contrib.admin import DateFieldListFilter
 from games_project.feedback.models import Comment
 
 from .decorators import remove_delete_actions
+from .decorators import title
 from .models import Category
 from .models import Environment
 from .models import Game
@@ -32,8 +33,8 @@ class GamesInLine(admin.StackedInline):
     show_change_link = True
 
 
+@title("Players group size")
 class GroupSizeListFilter(admin.SimpleListFilter):
-    title = "Players group size"
     parameter_name = "group_size"
 
     def lookups(self, request, model_admin):
@@ -41,28 +42,28 @@ class GroupSizeListFilter(admin.SimpleListFilter):
             ("<10", "Under 10"),
             ("10-20", "Between 10 and 20"),
             ("21-50", "Between 21 and 50"),
-            ("50+", "Between 50+"),
+            ("50+", "Above 50"),
         ]
 
     def queryset(self, request, queryset):
-        if self.value() == "<10":
-            return queryset.filter(
-                max_players__lt=10,
-            )
-        if self.value() == "10-20":
-            return queryset.filter(
-                max_players__lt=21,
-            )
-        if self.value() == "21-50":
-            return queryset.filter(
-                max_players__lt=51,
-            )
-        if self.value() == "50+":
-            return queryset.filter(
-                max_players__gt=50,
-            )
-
-        return None
+        value = self.value()
+        match value:
+            case "<10":
+                return queryset.filter(min_players__lt=10)
+            case "10-20":
+                return queryset.filter(
+                    max_players__gte=10,
+                    min_players__lte=20,
+                )
+            case "21-50":
+                return queryset.filter(
+                    max_players__gte=21,
+                    min_players__lte=50,
+                )
+            case "50+":
+                return queryset.filter(max_players__gte=50)
+            case _:
+                return queryset
 
 
 @admin.action(description="Set selected games environment to indoor")
@@ -185,8 +186,8 @@ class GameStatsAdmin(admin.ModelAdmin):
     list_display = [
         "title",
         "last_comment",
-        "last_24h_comments_count",
-        "display_updated_in_last_24_hours",
+        "comments_count_last_day",
+        "display_updated_last_day",
         "is_active",
         "average_rating",
         "display_avg_rating",
@@ -200,18 +201,15 @@ class GameStatsAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return games_anotated_with_stats()
 
-    @admin.display(
-        description="Avg rating calculated using selectors",
-        ordering="avg_rating",
-    )
+    @admin.display(ordering="avg_rating")
+    @title("Avg rating calculated using selectors")
     def display_avg_rating(self, obj):
-        # obj = one RecommendedGame instance.
         return f"{obj.avg_rating:.2f}"
 
     @admin.display(description="Number of comments")
     def display_comment_count(self, obj):
         return obj.comments_count
 
-    @admin.display(description="Updated in last 24h", boolean=True)
-    def display_updated_in_last_24_hours(self, obj):
-        return obj.has_been_updated_in_last_24_hours
+    @admin.display(description="Updated last day", boolean=True)
+    def display_updated_last_day(self, obj):
+        return obj.was_updated_last_day
