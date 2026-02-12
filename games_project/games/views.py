@@ -1,3 +1,6 @@
+from django.db.models import F
+from django.db.models.functions import TruncDate
+from django.http import JsonResponse
 from django.views.generic import DetailView
 from django.views.generic import ListView
 
@@ -18,10 +21,11 @@ class GameDetailsView(DetailView):
     context_object_name = "game"
 
 
-class CommentsView(ListView):
-    model = Comment
-    template_name = "games/comments.html"
-    context_object_name = "comments"
+def comments_json_view(request, pk):
+    data = list(
+        Comment.objects.filter(game__pk=pk)
+        .annotate(author_name=F("author__username"), date=TruncDate("created"))
+        .values()
+    )
 
-    def get_queryset(self):
-        return Comment.objects.filter(game__pk=self.kwargs["pk"])
+    return JsonResponse(data, safe=False)

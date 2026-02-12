@@ -2,27 +2,51 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     const comments_container = document.getElementById("comments-container");
+    const url = comments_container.getAttribute("data-url");
+    const template = document.getElementById("comment-template");
+
+    if (!comments_container || !template) {
+        console.error("Missing elements:", { comments_container, template });
+        return;
+    }
 
     if (comments_container) {
-        const url = comments_container.getAttribute("data-url");
-
         fetch(url, {
             method: "GET",
-            header: {
+            headers: {
                 // tells django this is an AJAX request
                 "X-Requested-With": "XMLHttpRequest"
             }
         })
         .then(response => {
+            console.log("Response status:", response.status);
             if (!response.ok) throw new Error("Response is not ok");
-            return response.text();
+            return response.json();
         })
-        .then(html => {
-            comments_container.innerHTML = html
+        .then(data => {
+            if(data.length != 0) {
+                comments_container.innerHTML = "";
+                console.log("0000")
+                data.forEach(comment => {
+                    const clone = template.content.cloneNode(true);
+
+                    clone.querySelector('.comment-author').textContent = comment.author_name;
+                    clone.querySelector('.comment-text').textContent = comment.text;
+                    if(comment.rating) {
+                        clone.querySelector('.comment-rating').textContent = comment.rating;
+                    } else {
+                        clone.querySelector('.comment-rating').textContent = "-";
+                    }
+                    clone.querySelector('.comment-upvotes').textContent = comment.upvotes;
+                    clone.querySelector('.comment-downvotes').textContent = comment.downvotes;
+                    clone.querySelector('.comment-date').textContent = comment.date;
+                    comments_container.appendChild(clone);
+                });
+            }
         })
         .catch(error => {
             console.error("Error loading comments: ", error);
-            comments_container.innerHTML = "<p>Failed to load comments.</p>";
+            comments_container.innerHTML = "<p>Failed to load comments (.js).</p>";
         });
     }
 });
