@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
 from .models import User
+from .models import UserIp
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     # Force the `admin` sign in process to go through the `django-allauth` workflow:
@@ -15,13 +16,31 @@ if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     admin.site.login = secure_admin_login(admin.site.login)  # type: ignore[method-assign]
 
 
+class NoAddMixin:
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(UserIp)
+class UserIpAdmin(NoAddMixin, admin.ModelAdmin):
+    list_display = [
+        "ip_address",
+        "user",
+        "created",
+        "updated",
+    ]
+
+
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("name", "email")}),
+        (
+            _("Personal info"),
+            {"fields": ("name", "email", "last_ip_address", "last_ip_update")},
+        ),
         (
             _("Permissions"),
             {
@@ -38,3 +57,4 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     list_display = ["username", "name", "is_superuser"]
     search_fields = ["name"]
+    readonly_fields = ["last_ip_address", "last_ip_update"]
