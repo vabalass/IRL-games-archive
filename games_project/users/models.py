@@ -1,8 +1,26 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+
+class UserIp(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE
+    )
+    address = models.GenericIPAddressField(null=True, blank=True)
+    date = models.DateTimeField(null=True, blank=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated"]
+        verbose_name_plural = "User IPs"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.address}"
 
 
 class User(AbstractUser):
@@ -27,14 +45,3 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
-
-    def update_ip(self, user_ip):
-        yesterday = timezone.now() - timezone.timedelta(days=1)
-
-        if self.last_ip_update is None or self.last_ip_update <= yesterday:
-            self.last_ip_address = user_ip
-            self.last_ip_update = timezone.now()
-            self.save()
-            return True
-
-        return False
