@@ -1,3 +1,6 @@
+from .models import UserIp
+
+
 class UserIpMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -6,7 +9,7 @@ class UserIpMiddleware:
         user = request.user
 
         if user.is_authenticated:
-            user_ip = request.META.get("REMOTE_ADDR")
-            user.update_ip(user_ip)
+            ip_address = request.META.get("REMOTE_ADDR")
+            UserIp.save_ip_if_new(user, ip_address)
 
         return self.get_response(request)

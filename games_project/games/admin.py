@@ -82,6 +82,14 @@ def reset_rating(self, request, queryset):
     self.message_user(request, message, messages.SUCCESS)
 
 
+@admin.action(description="Soft delete selected games")
+def soft_delete(self, request, queryset):
+    updated = queryset.update(is_active=False)
+    message = f"{updated} game(s) were successfully soft_deleted"
+
+    self.message_user(request, message, messages.SUCCESS)
+
+
 class NoDeleteMixin:
     def get_actions(self, request):
         actions = super().get_actions(request)
