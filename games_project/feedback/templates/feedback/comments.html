@@ -1,6 +1,6 @@
 <h3 class="mt-4">Comments:</h3>
 <div id="comments-container"
-     data-url="{% url 'games:comments' pk=game.pk %}">
+     data-url="{% url 'games:comments' game_pk=game.pk %}">
   <div class="alert alert-light border">No comments</div>
 </div>
 <template id="comment-template">

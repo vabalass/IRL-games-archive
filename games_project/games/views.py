@@ -21,9 +21,9 @@ class GameDetailsView(DetailView):
     context_object_name = "game"
 
 
-def comments_json_view(request, pk):
+def comments_json_view(request, game_pk):
     data = list(
-        Comment.objects.filter(game__pk=pk)
+        Comment.objects.filter(game__pk=game_pk)
         .annotate(author_name=F("author__username"), date=TruncDate("created"))
         .values()
     )
