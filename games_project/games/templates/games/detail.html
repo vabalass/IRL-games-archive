@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}
@@ -11,3 +12,7 @@
   <a href="{% url 'games:list' %}">Back to all games</a>
   {% include "feedback/comments.html" %}
 {% endblock content %}
+{% block javascript %}
+  {{ block.super }}
+  <script defer src="{% static 'js/comments.js' %}"></script>
+{% endblock javascript %}
