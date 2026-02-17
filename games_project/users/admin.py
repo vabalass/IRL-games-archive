@@ -27,7 +27,6 @@ class UserIpAdmin(NoAddMixin, admin.ModelAdmin):
         "ip_address",
         "user",
         "created",
-        "updated",
     ]
 
 
@@ -39,7 +38,7 @@ class UserAdmin(auth_admin.UserAdmin):
         (None, {"fields": ("username", "password")}),
         (
             _("Personal info"),
-            {"fields": ("name", "email", "last_ip_address", "last_ip_update")},
+            {"fields": ("name", "email")},
         ),
         (
             _("Permissions"),
@@ -57,4 +56,3 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     list_display = ["username", "name", "is_superuser"]
     search_fields = ["name"]
-    readonly_fields = ["last_ip_address", "last_ip_update"]

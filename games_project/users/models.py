@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -16,31 +14,22 @@ class UserIp(models.Model):
     )
     ip_address = models.GenericIPAddressField()
     created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["-updated"]
+        ordering = ["-created"]
         verbose_name_plural = "User IPs"
-        unique_together = ["user", "ip_address"]
 
     def __str__(self):
         return f"{self.user.username}: {self.ip_address}"
 
     @classmethod
     def save_ip_if_new(cls, user, ip_address):
-        user_ip, is_new = cls.objects.get_or_create(
-            user=user,
-            ip_address=ip_address,
-        )
+        today = timezone.now().date()
 
-        yesterday = timezone.now() - timedelta(days=1)
-        if not is_new and user_ip.updated <= yesterday:
-            user_ip.save()  # user_ip.updated field is updated
-            return True
-        if is_new:
-            return True
+        if cls.objects.filter(user=user, created__date=today).exists():
+            return None
 
-        return bool(is_new)
+        return cls.objects.create(user=user, ip_address=ip_address)
 
 
 class User(AbstractUser):
@@ -54,8 +43,6 @@ class User(AbstractUser):
     name = models.CharField(_("Name of User"), blank=True, max_length=255)
     first_name = None  # type: ignore[assignment]
     last_name = None  # type: ignore[assignment]
-    last_ip_address = models.GenericIPAddressField(null=True, blank=True)
-    last_ip_update = models.DateTimeField(null=True, blank=True)
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
