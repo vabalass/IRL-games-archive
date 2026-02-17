@@ -1,0 +1,16 @@
+<div class="card mb-3" id="comment-form-container">
+  <div class="card-body">
+    <h5 class="card-title" id="form-title">Add a Comment</h5>
+    <form id="comment-form" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="parent" id="parent-id" value="" />
+      <div class="mb-3">
+        <label for="comment-text" class="form-label">Your comment:</label>
+        <textarea name="comment-text" id="comment-text" class="form-control" required>
+                </textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Post Comment</button>
+      <button type="button" class="btn btn-secondary d-none" id="cancel-reply">Cancel</button>
+    </form>
+  </div>
+</div>

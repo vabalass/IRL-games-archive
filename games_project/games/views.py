@@ -1,3 +1,5 @@
+import json
+
 from django.db.models import F
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse
@@ -29,3 +31,17 @@ def comments_json_view(request, game_pk):
     )
 
     return JsonResponse(data, safe=False)
+
+
+def reply_view(request, game_pk):
+    data = json.loads(request.body)
+    text = data.get("text", None)
+
+    # Any process that you want
+    data = {
+        "success": True,
+        "message": "It works!",
+        "game_pk": game_pk,
+        "received_text": text,
+    }
+    return JsonResponse(data)
