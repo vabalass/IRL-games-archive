@@ -3,21 +3,17 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-
-
   {{ user.username }}
-
-
 {% endblock title %}
 {% block content %}
-<h1>All games</h1>
-<ul>
+  <h1>All games</h1>
+  <ul>
     {% for game in games %}
-        <li>
-            <a href="{% url 'games:detail' game.slug %}">{{ game.title }}</a>
-        </li>
+      <li>
+        <a href="{% url 'games:detail' game.slug %}">{{ game.title }} ({{ game.comments.count }})</a>
+      </li>
     {% empty %}
-        <li>No games available yet.</li>
+      <li>No games available yet.</li>
     {% endfor %}
-</ul>
+  </ul>
 {% endblock content %}

@@ -1,0 +1,21 @@
+<h3 class="mt-4">Comments:</h3>
+<div id="comments-container"
+     data-url="{% url 'games:comments' game_pk=game.pk %}">
+  <div class="alert alert-light border">No comments</div>
+</div>
+<template id="comment-template">
+  <div class="card card-body mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="card-title mb-0">
+        <i class="bi bi-person-fill"></i> <span class="comment-author"></span>
+      </h5>
+      <div>
+        <small class="me-3">Rating: <span class="comment-rating"></span></small>
+        <small class="me-3">↑<span class="comment-upvotes"></span></small>
+        <small class="me-3">↓<span class="comment-downvotes"></span></small>
+        <small class="me-3 comment-date"></small>
+      </div>
+    </div>
+    <p class="card-text text-secondary comment-text"></p>
+  </div>
+</template>
