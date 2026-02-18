@@ -11,5 +11,5 @@ urlpatterns = [
     path("", view=GameListView.as_view(), name="list"),
     path("<slug:slug>/", view=GameDetailsView.as_view(), name="detail"),
     path("<int:game_pk>/comments/", view=comments_json_view, name="comments"),
-    path("<int:game_pk>/reply", view=reply_view, name="reply"),
+    path("<int:game_pk>/reply/", view=reply_view, name="reply"),
 ]

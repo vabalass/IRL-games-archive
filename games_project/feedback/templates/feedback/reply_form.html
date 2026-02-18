@@ -6,11 +6,11 @@
       <input type="hidden" name="parent" id="parent-id" value="" />
       <div class="mb-3">
         <label for="comment-text" class="form-label">Your comment:</label>
-        <textarea name="comment-text" id="comment-text" class="form-control" required>
-                </textarea>
+        <textarea name="text" id="comment-text" class="form-control" rows="4" required></textarea>
       </div>
       <button type="submit" class="btn btn-primary">Post Comment</button>
       <button type="button" class="btn btn-secondary d-none" id="cancel-reply">Cancel</button>
     </form>
+    <div id="form-errors" class="alert alert-danger mt-2 d-none"></div>
   </div>
 </div>
