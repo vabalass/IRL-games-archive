@@ -39,8 +39,7 @@ function loadComments() {
             });
         })
         .catch(error => {
-            console.error("Error loading comments:", error);
-            commentsContainer.innerHTML = '<div class="alert alert-danger">Failed to load comments.</div>';
+            commentsContainer.innerHTML = `<div class="alert alert-danger">Failed to load comments. ${error.message}</div>`;
         });
 
     function createCommentElement(comment, isReply) {
@@ -54,7 +53,7 @@ function loadComments() {
         clone.querySelector('.comment-upvotes').textContent = comment.upvotes;
         clone.querySelector('.comment-downvotes').textContent = comment.downvotes;
         clone.querySelector('.comment-date').textContent = comment.time_ago;
-        clone.querySelector('.comment-rating').textContent = comment.rating
+        clone.querySelector('.comment-rating').textContent = comment.rating;
 
 
         const replyBtn = clone.querySelector('.reply-btn');
