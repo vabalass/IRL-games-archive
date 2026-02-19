@@ -74,19 +74,19 @@ def make_indoor(self, request, queryset):
     self.message_user(request, message, messages.SUCCESS)
 
 
-@admin.action(description="Soft delete selected games")
-def soft_delete(self, request, queryset):
-    updated = queryset.update(is_active=False)
-    message = f"{updated} game(s) were successfully soft_deleted"
-
-    self.message_user(request, message, messages.SUCCESS)
-
-
 @admin.action(description="Reset games rating (comments rating will be set to None)")
 def reset_rating(self, request, queryset):
     updated = Comment.objects.filter(game__in=queryset).update(rating=None)
 
     message = f"{updated} comment ratings(s) were successfully reset"
+    self.message_user(request, message, messages.SUCCESS)
+
+
+@admin.action(description="Soft delete selected games")
+def soft_delete(self, request, queryset):
+    updated = queryset.update(is_active=False)
+    message = f"{updated} game(s) were successfully soft_deleted"
+
     self.message_user(request, message, messages.SUCCESS)
 
 
