@@ -1,3 +1,8 @@
+from functools import wraps
+
+from django.http import JsonResponse
+
+
 # sets field title in admin panel instead of .short_description or .title
 def title(text):
     def wrapper(obj):
@@ -26,3 +31,16 @@ def remove_delete_actions(admin_class):
     admin_class.has_delete_permission = remove_delete_permission
 
     return admin_class
+
+
+def ajax_login_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse(
+                {"success": False, "errors": {"auth": ["Please log in to continue."]}},
+                status=401,
+            )
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
