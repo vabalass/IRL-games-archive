@@ -4,6 +4,7 @@ from factory.django import DjangoModelFactory
 
 from games_project.feedback.models import Comment
 from games_project.games.models import Category
+from games_project.games.models import Game
 from games_project.games.models import GameWithStats
 
 
@@ -15,15 +16,20 @@ class CategoryFactory(DjangoModelFactory):
     slug = slugify(title)
 
 
-class GameWithStatsFactory(DjangoModelFactory):
+class GameFactory(DjangoModelFactory):
     class Meta:
-        model = GameWithStats
+        model = Game
 
     title = factory.Faker("catch_phrase")
     slug = f"{slugify(title)}"
     description = factory.Faker("paragraph")
 
     category = factory.SubFactory(CategoryFactory)
+
+
+class GameWithStatsFactory(GameFactory):
+    class Meta:
+        model = GameWithStats
 
 
 class CommentFactory(DjangoModelFactory):
