@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -9,6 +8,7 @@ from django.views.generic import ListView
 
 from games_project.feedback.models import Comment
 
+from .decorators import ajax_login_required
 from .forms import CommentForm
 from .models import Game
 
@@ -31,7 +31,7 @@ def comments_json_view(request, game_pk):
     return JsonResponse(data, safe=False)
 
 
-@login_required
+@ajax_login_required
 @require_http_methods(["POST"])
 def reply_view(request, game_pk):
     try:
