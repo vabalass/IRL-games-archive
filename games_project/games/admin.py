@@ -185,7 +185,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class GameStatsAdmin(admin.ModelAdmin):
     list_display = [
         "title",
-        "last_comment",
+        "last_comment_text",
         "comments_count_last_day",
         "display_updated_last_day",
         "is_active",

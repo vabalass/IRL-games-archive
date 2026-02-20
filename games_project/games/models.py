@@ -105,16 +105,16 @@ class GameWithStats(Game):
         return f"{rating:.2f}" if rating else "no rating"
 
     @property
-    def last_comment(self):
+    def last_comment_text(self):
         comment = self.comments.order_by("-created").first()
         return comment.text if comment else None
 
-    yesterday = timezone.now() - timezone.timedelta(days=1)
-
     @property
     def comments_count_last_day(self):
-        return self.comments.filter(created__gte=self.yesterday).count()
+        yesterday = timezone.now() - timezone.timedelta(days=1)
+        return self.comments.filter(created__gte=yesterday).count()
 
     @property
     def was_updated_last_day(self):
-        return self.modified >= self.yesterday
+        yesterday = timezone.now() - timezone.timedelta(days=1)
+        return self.modified >= yesterday

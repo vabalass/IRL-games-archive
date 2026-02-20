@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 parent: parentId
             })
         })
-        .then(response => response.json())  // ← Parse JSON regardless of status
+        .then(response => response.json())
         .then(data => {
             if (data.success) {
                 resetForm();
